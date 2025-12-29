@@ -4,15 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Running Duck</title>
+  <title>Running Animals</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
+
     :root {
-      /* 
-        SPEED CONTROL: Adjust this single variable to change animation speed
-        Lower = faster, Higher = slower
-        Default: 0.3s (moderate run)
-        Fast: 0.15s | Slow: 0.6s
-      */
       --run-speed: 0.3s;
     }
 
@@ -28,19 +24,37 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #87CEEB 0%, #98D8C8 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: 'Fredoka', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .container {
       text-align: center;
     }
 
-    .duck-wrapper {
-      display: inline-block;
+    h1 {
+      color: #fff;
+      text-shadow: 0 4px 20px rgba(255, 183, 77, 0.3);
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      font-weight: 600;
     }
 
-    /* Body bob animation */
+    .animal-wrapper {
+      display: inline-block;
+      min-height: 220px;
+      min-width: 270px;
+    }
+
+    .animal-svg {
+      display: none;
+    }
+
+    .animal-svg.active {
+      display: block;
+    }
+
+    /* ========== DUCK ANIMATIONS ========== */
     .duck-body-group {
       animation: bodyBob var(--run-speed) ease-in-out infinite;
     }
@@ -61,7 +75,6 @@
       }
     }
 
-    /* Left leg animation */
     .leg-left {
       transform-origin: 85px 140px;
       animation: legLeft var(--run-speed) ease-in-out infinite;
@@ -79,7 +92,6 @@
       }
     }
 
-    /* Right leg animation - offset from left */
     .leg-right {
       transform-origin: 115px 140px;
       animation: legRight var(--run-speed) ease-in-out infinite;
@@ -97,7 +109,6 @@
       }
     }
 
-    /* Wing flap */
     .wing {
       transform-origin: 70px 95px;
       animation: wingFlap var(--run-speed) ease-in-out infinite;
@@ -119,7 +130,6 @@
       }
     }
 
-    /* Tail wag */
     .tail {
       transform-origin: 30px 90px;
       animation: tailWag var(--run-speed) ease-in-out infinite;
@@ -141,7 +151,6 @@
       }
     }
 
-    /* Eye blink - slower than run speed */
     .eye-lid {
       animation: blink calc(var(--run-speed) * 10) ease-in-out infinite;
     }
@@ -159,7 +168,6 @@
       }
     }
 
-    /* Beak wobble */
     .beak {
       transform-origin: 160px 75px;
       animation: beakWobble var(--run-speed) ease-in-out infinite;
@@ -181,132 +189,214 @@
       }
     }
 
-    /* Speed control UI */
+    /* ========== GIRAFFE ANIMATIONS ========== */
+    .giraffe-body-group {
+      animation: giraffeBodyBob var(--run-speed) ease-in-out infinite;
+    }
+
+    @keyframes giraffeBodyBob {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      25% {
+        transform: translateY(-6px) rotate(-1deg);
+      }
+
+      75% {
+        transform: translateY(-6px) rotate(1deg);
+      }
+    }
+
+    .leg-back-left {
+      transform-origin: 51px 115px;
+      animation: giraffeBackLegLeft var(--run-speed) ease-in-out infinite;
+    }
+
+    @keyframes giraffeBackLegLeft {
+
+      0%,
+      100% {
+        transform: rotate(-25deg);
+      }
+
+      50% {
+        transform: rotate(25deg);
+      }
+    }
+
+    .leg-back-right {
+      transform-origin: 68px 115px;
+      animation: giraffeBackLegRight var(--run-speed) ease-in-out infinite;
+    }
+
+    @keyframes giraffeBackLegRight {
+
+      0%,
+      100% {
+        transform: rotate(25deg);
+      }
+
+      50% {
+        transform: rotate(-25deg);
+      }
+    }
+
+    .leg-front-left {
+      transform-origin: 121px 115px;
+      animation: giraffeFrontLegLeft var(--run-speed) ease-in-out infinite;
+    }
+
+    @keyframes giraffeFrontLegLeft {
+
+      0%,
+      100% {
+        transform: rotate(25deg);
+      }
+
+      50% {
+        transform: rotate(-25deg);
+      }
+    }
+
+    .leg-front-right {
+      transform-origin: 138px 115px;
+      animation: giraffeFrontLegRight var(--run-speed) ease-in-out infinite;
+    }
+
+    @keyframes giraffeFrontLegRight {
+
+      0%,
+      100% {
+        transform: rotate(-25deg);
+      }
+
+      50% {
+        transform: rotate(25deg);
+      }
+    }
+
+    /* ========== CONTROLS ========== */
     .controls {
       margin-top: 40px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 20px 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      padding: 25px 35px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
 
     .controls label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-      color: #333;
+      font-weight: 600;
+      color: #e0e0e0;
     }
 
     .controls input[type="range"] {
-      width: 200px;
+      width: 180px;
       cursor: pointer;
+      accent-color: #FFB74D;
     }
 
     .speed-value {
       font-family: monospace;
-      background: #f0f0f0;
-      padding: 4px 8px;
-      border-radius: 4px;
-      margin-left: 10px;
+      background: rgba(255, 183, 77, 0.2);
+      color: #FFB74D;
+      padding: 6px 12px;
+      border-radius: 8px;
     }
 
-    h1 {
+    .animal-selector {
+      display: flex;
+      gap: 12px;
+    }
+
+    .animal-btn {
+      padding: 12px 24px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #b0b0b0;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .animal-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-      margin-bottom: 30px;
+    }
+
+    .animal-btn.active {
+      background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+      border-color: #FFB74D;
+      color: #1a1a2e;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1>🏃 Running Duck 🦆</h1>
+    <h1 id="title">🏃 Running Duck 🦆</h1>
 
-    <div class="duck-wrapper">
-      <svg width="250" height="200" viewBox="0 0 250 200" xmlns="http://www.w3.org/2000/svg">
-        <!-- Legs (behind body) -->
+    <div class="animal-wrapper">
+      <!-- DUCK SVG -->
+      <svg class="animal-svg active" id="duck" width="250" height="200" viewBox="0 0 250 200"
+        xmlns="http://www.w3.org/2000/svg">
         <g class="leg-left">
-          <!-- Left leg -->
           <rect x="80" y="140" width="10" height="35" rx="5" fill="#E8A030" />
-          <!-- Left foot -->
           <ellipse cx="85" cy="178" rx="18" ry="8" fill="#E8A030" />
           <path d="M70 178 L85 170 L85 186 Z" fill="#E8A030" />
         </g>
-
         <g class="leg-right">
-          <!-- Right leg -->
           <rect x="110" y="140" width="10" height="35" rx="5" fill="#D4912A" />
-          <!-- Right foot -->
           <ellipse cx="115" cy="178" rx="18" ry="8" fill="#D4912A" />
           <path d="M100 178 L115 170 L115 186 Z" fill="#D4912A" />
         </g>
-
-        <!-- Main body group (bobs up and down) -->
         <g class="duck-body-group">
-          <!-- Tail feathers -->
           <g class="tail">
             <ellipse cx="30" cy="85" rx="20" ry="12" fill="#F5D76E" transform="rotate(-20 30 85)" />
             <ellipse cx="25" cy="80" rx="15" ry="8" fill="#FFE599" transform="rotate(-30 25 80)" />
             <ellipse cx="35" cy="92" rx="12" ry="6" fill="#E8C547" transform="rotate(-10 35 92)" />
           </g>
-
-          <!-- Body -->
           <ellipse cx="100" cy="100" rx="65" ry="50" fill="#F5D76E" />
-
-          <!-- Body highlight -->
           <ellipse cx="90" cy="85" rx="40" ry="30" fill="#FFE599" opacity="0.6" />
-
-          <!-- Belly -->
           <ellipse cx="105" cy="115" rx="45" ry="30" fill="#FFF8DC" />
-
-          <!-- Wing -->
           <g class="wing">
             <ellipse cx="85" cy="100" rx="35" ry="25" fill="#E8C547" />
             <ellipse cx="75" cy="95" rx="20" ry="15" fill="#D4B13D" opacity="0.5" />
-            <!-- Wing feather details -->
             <path d="M55 105 Q65 100 75 105" stroke="#D4B13D" stroke-width="2" fill="none" />
             <path d="M60 110 Q70 105 80 110" stroke="#D4B13D" stroke-width="2" fill="none" />
           </g>
-
-          <!-- Neck -->
           <ellipse cx="150" cy="75" rx="25" ry="35" fill="#F5D76E" />
-
-          <!-- Head -->
           <ellipse cx="165" cy="50" rx="30" ry="28" fill="#F5D76E" />
-
-          <!-- Head highlight -->
           <ellipse cx="160" cy="42" rx="18" ry="15" fill="#FFE599" opacity="0.5" />
-
-          <!-- Eye white -->
           <ellipse cx="175" cy="45" rx="12" ry="14" fill="white" />
-
-          <!-- Eye pupil - googly style! -->
           <circle cx="180" cy="48" r="7" fill="#222" />
           <circle cx="182" cy="46" r="2.5" fill="white" />
-
-          <!-- Eye lid for blink -->
           <ellipse class="eye-lid" cx="175" cy="45" rx="13" ry="15" fill="#F5D76E" style="transform-origin: 175px 45px;"
             clip-path="inset(50% 0 0 0)" />
-
-          <!-- Eyebrow - gives goofy expression -->
           <path d="M163 32 Q175 28 188 35" stroke="#8B6914" stroke-width="3" fill="none" stroke-linecap="round" />
-
-          <!-- Beak -->
           <g class="beak">
-            <!-- Upper beak -->
             <path d="M185 55 L220 52 Q225 58 220 62 L185 62 Q180 58 185 55 Z" fill="#E8A030" />
-            <!-- Lower beak -->
             <path d="M185 62 L215 62 Q218 68 212 70 L185 68 Q182 65 185 62 Z" fill="#D4912A" />
-            <!-- Nostril -->
             <circle cx="200" cy="57" r="2" fill="#C48820" />
-            <!-- Beak line -->
             <path d="M185 60 L218 60" stroke="#C48820" stroke-width="1" />
           </g>
-
-          <!-- Cheek blush - adds goofiness -->
           <ellipse cx="155" cy="58" rx="8" ry="5" fill="#FFB6C1" opacity="0.5" />
-
-          <!-- Tuft of feathers on head -->
           <g>
             <ellipse cx="150" cy="28" rx="6" ry="10" fill="#E8C547" transform="rotate(-20 150 28)" />
             <ellipse cx="158" cy="25" rx="5" ry="12" fill="#F5D76E" transform="rotate(-5 158 25)" />
@@ -314,34 +404,111 @@
           </g>
         </g>
       </svg>
+
+      <!-- GIRAFFE SVG -->
+      <svg class="animal-svg" id="giraffe" width="250" height="200" viewBox="0 0 250 200"
+        xmlns="http://www.w3.org/2000/svg">
+        <g class="leg-back-left">
+          <rect x="45" y="115" width="12" height="55" rx="6" fill="#C4923A" />
+          <ellipse cx="51" cy="175" rx="10" ry="6" fill="#5D4037" />
+        </g>
+        <g class="leg-back-right">
+          <rect x="62" y="115" width="12" height="55" rx="6" fill="#B8862F" />
+          <ellipse cx="68" cy="175" rx="10" ry="6" fill="#4E342E" />
+        </g>
+        <g class="leg-front-left">
+          <rect x="115" y="115" width="12" height="55" rx="6" fill="#C4923A" />
+          <ellipse cx="121" cy="175" rx="10" ry="6" fill="#5D4037" />
+        </g>
+        <g class="leg-front-right">
+          <rect x="132" y="115" width="12" height="55" rx="6" fill="#B8862F" />
+          <ellipse cx="138" cy="175" rx="10" ry="6" fill="#4E342E" />
+        </g>
+        <g class="giraffe-body-group">
+          <g class="tail">
+            <path d="M30 95 Q15 100 10 115 Q8 125 15 130" stroke="#C4923A" stroke-width="4" fill="none"
+              stroke-linecap="round" />
+            <ellipse cx="15" cy="132" rx="6" ry="10" fill="#8B6914" transform="rotate(20 15 132)" />
+          </g>
+          <ellipse cx="95" cy="100" rx="60" ry="35" fill="#E8B84A" />
+          <ellipse cx="70" cy="95" rx="12" ry="10" fill="#C4923A" transform="rotate(-15 70 95)" />
+          <ellipse cx="95" cy="105" rx="10" ry="8" fill="#C4923A" />
+          <ellipse cx="115" cy="90" rx="8" ry="10" fill="#C4923A" transform="rotate(10 115 90)" />
+          <ellipse cx="55" cy="108" rx="7" ry="6" fill="#C4923A" />
+          <ellipse cx="130" cy="100" rx="9" ry="7" fill="#C4923A" transform="rotate(-5 130 100)" />
+          <ellipse cx="85" cy="88" rx="30" ry="18" fill="#F5D76E" opacity="0.4" />
+          <path d="M140 95 Q155 80 165 50 Q170 35 175 20" stroke="#E8B84A" stroke-width="35" fill="none"
+            stroke-linecap="round" />
+          <ellipse cx="155" cy="65" rx="8" ry="6" fill="#C4923A" transform="rotate(-20 155 65)" />
+          <ellipse cx="165" cy="45" rx="6" ry="8" fill="#C4923A" transform="rotate(-25 165 45)" />
+          <ellipse cx="150" cy="82" rx="7" ry="5" fill="#C4923A" />
+          <ellipse cx="185" cy="25" rx="25" ry="20" fill="#E8B84A" />
+          <ellipse cx="208" cy="32" rx="18" ry="12" fill="#F5D76E" />
+          <circle cx="218" cy="30" r="3" fill="#5D4037" />
+          <circle cx="218" cy="36" r="3" fill="#5D4037" />
+          <ellipse cx="180" cy="20" rx="12" ry="10" fill="#F5D76E" opacity="0.5" />
+          <ellipse cx="178" cy="22" rx="10" ry="12" fill="white" />
+          <circle cx="182" cy="24" r="6" fill="#222" />
+          <circle cx="184" cy="22" r="2" fill="white" />
+          <ellipse class="eye-lid" cx="178" cy="22" rx="11" ry="13" fill="#E8B84A" style="transform-origin: 178px 22px;"
+            clip-path="inset(50% 0 0 0)" />
+          <path d="M168 12 Q178 8 190 14" stroke="#8B6914" stroke-width="2.5" fill="none" stroke-linecap="round" />
+          <path d="M200 40 Q210 45 220 42" stroke="#5D4037" stroke-width="2" fill="none" stroke-linecap="round" />
+          <ellipse cx="195" cy="35" rx="6" ry="4" fill="#FFB6C1" opacity="0.4" />
+          <ellipse cx="165" cy="12" rx="8" ry="5" fill="#E8B84A" transform="rotate(-30 165 12)" />
+          <ellipse cx="165" cy="12" rx="5" ry="3" fill="#FFB6C1" transform="rotate(-30 165 12)" opacity="0.5" />
+          <ellipse cx="190" cy="8" rx="8" ry="5" fill="#E8B84A" transform="rotate(30 190 8)" />
+          <ellipse cx="190" cy="8" rx="5" ry="3" fill="#FFB6C1" transform="rotate(30 190 8)" opacity="0.5" />
+          <rect x="170" y="2" width="5" height="14" rx="2.5" fill="#C4923A" />
+          <circle cx="172.5" cy="2" r="4" fill="#5D4037" />
+          <rect x="182" y="2" width="5" height="14" rx="2.5" fill="#C4923A" />
+          <circle cx="184.5" cy="2" r="4" fill="#5D4037" />
+          <rect x="168" y="15" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-20 168 15)" />
+          <rect x="163" y="25" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-25 163 25)" />
+          <rect x="158" y="38" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-30 158 38)" />
+          <rect x="152" y="52" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-35 152 52)" />
+          <rect x="147" y="66" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-25 147 66)" />
+          <rect x="143" y="78" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-15 143 78)" />
+        </g>
+      </svg>
     </div>
 
     <div class="controls">
-      <label>
-        Animation Speed:
-        <input type="range" id="speedSlider" min="0.1" max="0.8" step="0.05" value="0.3">
+      <div class="control-row">
+        <label>Choose Animal:</label>
+        <div class="animal-selector">
+          <button class="animal-btn active" onclick="showAnimal('duck')">🦆 Duck</button>
+          <button class="animal-btn" onclick="showAnimal('giraffe')">🦒 Giraffe</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <label>Speed:</label>
+        <input type="range" id="speedSlider" min="0.1" max="0.8" step="0.05" value="0.3"
+          oninput="updateSpeed(this.value)">
         <span class="speed-value" id="speedValue">0.3s</span>
-      </label>
+      </div>
     </div>
   </div>
 
   <script>
-    // Speed control functionality
-    const speedSlider = document.getElementById('speedSlider');
-    const speedValue = document.getElementById('speedValue');
-
-    speedSlider.addEventListener('input', (e) => {
-      const speed = e.target.value;
-      document.documentElement.style.setProperty('--run-speed', `${speed}s`);
-      speedValue.textContent = `${speed}s`;
-    });
-
-    // Export function for game integration
-    window.setDuckSpeed = function (speedInSeconds) {
-      document.documentElement.style.setProperty('--run-speed', `${speedInSeconds}s`);
-      speedSlider.value = speedInSeconds;
-      speedValue.textContent = `${speedInSeconds}s`;
+    const titles = {
+      duck: '🏃 Running Duck 🦆',
+      giraffe: '🏃 Running Giraffe 🦒'
     };
+
+    function showAnimal(animal) {
+      document.querySelectorAll('.animal-svg').forEach(svg => svg.classList.remove('active'));
+      document.getElementById(animal).classList.add('active');
+      document.getElementById('title').textContent = titles[animal];
+      document.querySelectorAll('.animal-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', (i === 0 && animal === 'duck') || (i === 1 && animal === 'giraffe'));
+      });
+    }
+
+    function updateSpeed(speed) {
+      document.documentElement.style.setProperty('--run-speed', speed + 's');
+      document.getElementById('speedValue').textContent = speed + 's';
+    }
   </script>
 </body>
 
