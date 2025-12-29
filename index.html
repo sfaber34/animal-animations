@@ -350,8 +350,6 @@
 
 <body>
   <div class="container">
-    <h1 id="title">🏃 Running Duck 🦆</h1>
-
     <div class="animal-wrapper">
       <!-- DUCK SVG -->
       <svg class="animal-svg active" id="duck" width="250" height="200" viewBox="0 0 250 200"
@@ -406,7 +404,7 @@
       </svg>
 
       <!-- GIRAFFE SVG -->
-      <svg class="animal-svg" id="giraffe" width="250" height="200" viewBox="0 0 250 200"
+      <svg class="animal-svg" id="giraffe" width="250" height="300" viewBox="0 0 250 200"
         xmlns="http://www.w3.org/2000/svg">
         <g class="leg-back-left">
           <rect x="45" y="115" width="12" height="55" rx="6" fill="#C4923A" />
@@ -491,15 +489,9 @@
   </div>
 
   <script>
-    const titles = {
-      duck: '🏃 Running Duck 🦆',
-      giraffe: '🏃 Running Giraffe 🦒'
-    };
-
     function showAnimal(animal) {
       document.querySelectorAll('.animal-svg').forEach(svg => svg.classList.remove('active'));
       document.getElementById(animal).classList.add('active');
-      document.getElementById('title').textContent = titles[animal];
       document.querySelectorAll('.animal-btn').forEach((btn, i) => {
         btn.classList.toggle('active', (i === 0 && animal === 'duck') || (i === 1 && animal === 'giraffe'));
       });
