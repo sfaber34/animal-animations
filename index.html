@@ -10,6 +10,7 @@
 
     :root {
       --run-speed: 0.3s;
+      --eye-close: 0;
     }
 
     * {
@@ -185,20 +186,11 @@
     }
 
     .eye-lid {
-      animation: blink calc(var(--run-speed) * 10) ease-in-out infinite;
-    }
-
-    @keyframes blink {
-
-      0%,
-      90%,
-      100% {
-        transform: scaleY(1);
-      }
-
-      95% {
-        transform: scaleY(0.1);
-      }
+      /* Slow = open eyes, Fast = closed eyes (determination) */
+      transform-box: fill-box;
+      transform-origin: center bottom;
+      transform: scaleY(var(--eye-close));
+      transition: transform 180ms ease-out;
     }
 
     .beak {
@@ -405,8 +397,7 @@
             <ellipse cx="175" cy="45" rx="12" ry="14" fill="white" />
             <circle cx="180" cy="48" r="7" fill="#222" />
             <circle cx="182" cy="46" r="2.5" fill="white" />
-            <ellipse class="eye-lid" cx="175" cy="45" rx="13" ry="15" fill="#F5D76E"
-              style="transform-origin: 175px 45px;" clip-path="inset(50% 0 0 0)" />
+            <ellipse class="eye-lid" cx="175" cy="45" rx="13" ry="15" fill="#F5D76E" />
             <path d="M163 32 Q175 28 188 35" stroke="#8B6914" stroke-width="3" fill="none" stroke-linecap="round" />
             <g class="beak">
               <path d="M185 55 L220 52 Q225 58 220 62 L185 62 Q180 58 185 55 Z" fill="#E8A030" />
@@ -472,8 +463,7 @@
             <ellipse cx="178" cy="22" rx="10" ry="12" fill="white" />
             <circle cx="182" cy="24" r="6" fill="#222" />
             <circle cx="184" cy="22" r="2" fill="white" />
-            <ellipse class="eye-lid" cx="178" cy="22" rx="11" ry="13" fill="#E8B84A"
-              style="transform-origin: 178px 22px;" clip-path="inset(50% 0 0 0)" />
+            <ellipse class="eye-lid" cx="178" cy="22" rx="11" ry="13" fill="#E8B84A" />
             <path d="M168 12 Q178 8 190 14" stroke="#8B6914" stroke-width="2.5" fill="none" stroke-linecap="round" />
             <path d="M200 40 Q210 45 220 42" stroke="#5D4037" stroke-width="2" fill="none" stroke-linecap="round" />
             <ellipse cx="195" cy="35" rx="6" ry="4" fill="#FFB6C1" opacity="0.4" />
@@ -510,8 +500,26 @@
 
   <script>
     function updateSpeed(speed) {
-      document.documentElement.style.setProperty('--run-speed', speed + 's');
-      document.getElementById('speedValue').textContent = speed + 's';
+      const s = Number(speed);
+      document.documentElement.style.setProperty('--run-speed', s + 's');
+      document.getElementById('speedValue').textContent = s + 's';
+
+      // Map slider speed (seconds) to eye closure:
+      // Linear mapping:
+      // - at 0.8s: fully open (0)
+      // - at 0.1s: squinted to the same "max squint" you had previously
+      const slider = document.getElementById('speedSlider');
+      const min = Number(slider.min); // fastest
+      const max = Number(slider.max); // slowest
+      const previousMaxSquintAt = 0.45;
+      const tPrev = (max - previousMaxSquintAt) / (max - min); // 0..1
+      const maxSquint = Math.pow(Math.max(0, Math.min(1, tPrev)), 1.4);
+
+      const t = (max - s) / (max - min); // 0..1
+      const clamped = Math.max(0, Math.min(1, t));
+      const linearSquint = clamped * maxSquint;
+
+      document.documentElement.style.setProperty('--eye-close', linearSquint.toFixed(3));
     }
 
     function setAnimating(isAnimating) {
