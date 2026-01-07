@@ -11,6 +11,7 @@
     :root {
       --run-speed: 0.3s;
       --eye-close: 0;
+      --head-tilt: 0deg;
     }
 
     * {
@@ -303,6 +304,12 @@
       }
     }
 
+    .giraffe-head-neck {
+      transform-origin: 140px 95px;
+      transform: rotate(var(--head-tilt));
+      transition: transform 0.15s ease-out;
+    }
+
     /* ========== CONTROLS ========== */
     .controls {
       margin-top: 40px;
@@ -418,7 +425,7 @@
       <div class="animal-frame">
         <div class="animal-label">Giraffe</div>
         <!-- GIRAFFE SVG -->
-        <svg class="animal-svg" id="giraffe" width="250" height="200" viewBox="0 -19 250 200"
+        <svg class="animal-svg" id="giraffe" width="250" height="210" viewBox="0 -29 250 210"
           preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
           <g class="leg-back-left">
             <rect x="45" y="110" width="12" height="60" rx="6" fill="#C4923A" />
@@ -450,35 +457,37 @@
             <ellipse cx="115" cy="90" rx="8" ry="10" fill="#C4923A" transform="rotate(10 115 90)" />
             <ellipse cx="55" cy="108" rx="7" ry="6" fill="#C4923A" />
             <ellipse cx="85" cy="88" rx="30" ry="18" fill="#F5D76E" opacity="0.4" />
-            <path d="M140 95 Q155 80 165 50 Q170 35 175 20" stroke="#E8B84A" stroke-width="35" fill="none"
-              stroke-linecap="round" />
-            <ellipse cx="155" cy="65" rx="8" ry="6" fill="#C4923A" transform="rotate(-20 155 65)" />
-            <ellipse cx="165" cy="45" rx="6" ry="8" fill="#C4923A" transform="rotate(-25 165 45)" />
-            <ellipse cx="150" cy="82" rx="7" ry="5" fill="#C4923A" />
-            <ellipse cx="185" cy="25" rx="25" ry="20" fill="#E8B84A" />
-            <ellipse cx="208" cy="32" rx="18" ry="12" fill="#F5D76E" />
-            <circle cx="216" cy="31" r="3" fill="#5D4037" />
-            <circle cx="222" cy="32" r="2.8" fill="#5D4037" />
-            <ellipse cx="180" cy="20" rx="12" ry="10" fill="#F5D76E" opacity="0.5" />
-            <ellipse cx="178" cy="22" rx="10" ry="12" fill="white" />
-            <circle cx="182" cy="24" r="6" fill="#222" />
-            <circle cx="184" cy="22" r="2" fill="white" />
-            <ellipse class="eye-lid" cx="178" cy="22" rx="11" ry="13" fill="#E8B84A" />
-            <path d="M168 12 Q178 8 190 14" stroke="#8B6914" stroke-width="2.5" fill="none" stroke-linecap="round" />
-            <path d="M200 40 Q210 45 216 42" stroke="#5D4037" stroke-width="2" fill="none" stroke-linecap="round" />
-            <ellipse cx="195" cy="35" rx="6" ry="4" fill="#FFB6C1" opacity="0.4" />
-            <ellipse cx="165" cy="12" rx="8" ry="5" fill="#E8B84A" transform="rotate(-30 165 12)" />
-            <ellipse cx="165" cy="12" rx="5" ry="3" fill="#FFB6C1" transform="rotate(-30 165 12)" opacity="0.5" />
-            <ellipse cx="190" cy="8" rx="5" ry="3" fill="#FFB6C1" transform="rotate(30 190 8)" opacity="0.5" />
-            <rect x="170" y="-8" width="5" height="14" rx="2.5" fill="#C4923A" />
-            <circle cx="172.5" cy="-8" r="4" fill="#5D4037" />
-            <rect x="182" y="-8" width="5" height="14" rx="2.5" fill="#C4923A" />
-            <circle cx="184.5" cy="-8" r="4" fill="#5D4037" />
-            <rect x="163" y="25" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-25 163 25)" />
-            <rect x="158" y="38" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-30 158 38)" />
-            <rect x="152" y="52" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-35 152 52)" />
-            <rect x="147" y="66" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-25 147 66)" />
-            <rect x="143" y="78" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-15 143 78)" />
+            <g class="giraffe-head-neck">
+              <path d="M140 95 Q155 80 165 50 Q170 35 175 20" stroke="#E8B84A" stroke-width="35" fill="none"
+                stroke-linecap="round" />
+              <ellipse cx="155" cy="65" rx="8" ry="6" fill="#C4923A" transform="rotate(-20 155 65)" />
+              <ellipse cx="165" cy="45" rx="6" ry="8" fill="#C4923A" transform="rotate(-25 165 45)" />
+              <ellipse cx="150" cy="82" rx="7" ry="5" fill="#C4923A" />
+              <ellipse cx="185" cy="25" rx="25" ry="20" fill="#E8B84A" />
+              <ellipse cx="208" cy="32" rx="18" ry="12" fill="#F5D76E" />
+              <circle cx="216" cy="31" r="3" fill="#5D4037" />
+              <circle cx="222" cy="32" r="2.8" fill="#5D4037" />
+              <ellipse cx="180" cy="20" rx="12" ry="10" fill="#F5D76E" opacity="0.5" />
+              <ellipse cx="178" cy="22" rx="10" ry="12" fill="white" />
+              <circle cx="182" cy="24" r="6" fill="#222" />
+              <circle cx="184" cy="22" r="2" fill="white" />
+              <ellipse class="eye-lid" cx="178" cy="22" rx="11" ry="13" fill="#E8B84A" />
+              <path d="M168 12 Q178 8 190 14" stroke="#8B6914" stroke-width="2.5" fill="none" stroke-linecap="round" />
+              <path d="M200 40 Q210 45 216 42" stroke="#5D4037" stroke-width="2" fill="none" stroke-linecap="round" />
+              <ellipse cx="195" cy="35" rx="6" ry="4" fill="#FFB6C1" opacity="0.4" />
+              <ellipse cx="165" cy="12" rx="8" ry="5" fill="#E8B84A" transform="rotate(-30 165 12)" />
+              <ellipse cx="165" cy="12" rx="5" ry="3" fill="#FFB6C1" transform="rotate(-30 165 12)" opacity="0.5" />
+              <ellipse cx="190" cy="8" rx="5" ry="3" fill="#FFB6C1" transform="rotate(30 190 8)" opacity="0.5" />
+              <rect x="170" y="-8" width="5" height="14" rx="2.5" fill="#C4923A" />
+              <circle cx="172.5" cy="-8" r="4" fill="#5D4037" />
+              <rect x="182" y="-8" width="5" height="14" rx="2.5" fill="#C4923A" />
+              <circle cx="184.5" cy="-8" r="4" fill="#5D4037" />
+              <rect x="163" y="25" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-25 163 25)" />
+              <rect x="158" y="38" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-30 158 38)" />
+              <rect x="152" y="52" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-35 152 52)" />
+              <rect x="147" y="66" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-25 147 66)" />
+              <rect x="143" y="78" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-15 143 78)" />
+            </g>
           </g>
         </svg>
       </div>
@@ -520,12 +529,15 @@
       const linearSquint = clamped * maxSquint;
 
       document.documentElement.style.setProperty('--eye-close', linearSquint.toFixed(3));
+
+      // Map speed to head tilt (giraffe leans back when running fast)
+      // at 0.8s: 0deg (upright), at 0.1s: -12deg (leaning back)
+      const headTilt = -32 * clamped;
+      document.documentElement.style.setProperty('--head-tilt', headTilt.toFixed(1) + 'deg');
     }
 
     function setAnimating(isAnimating) {
       document.body.classList.toggle('animating', isAnimating);
-      const speedSlider = document.getElementById('speedSlider');
-      speedSlider.disabled = !isAnimating;
     }
 
     // Ensure UI and CSS var are in sync on initial load
