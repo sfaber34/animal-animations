@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    { "src": "^/giraffe-jump$", "dest": "/giraffe_jump_duration_control.html" },
+    { "src": "^/giraffe$", "dest": "/giraffe.svg" }
+  ]
+}
+
+

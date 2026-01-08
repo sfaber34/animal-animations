@@ -1,553 +1,271 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Running Animals</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giraffe Jump</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
-
     :root {
-      --run-speed: 0.3s;
-      --eye-close: 0;
-      --head-tilt: 0deg;
+      --bg: #0f172a;
+      --panel: rgba(255, 255, 255, 0.06);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --text: rgba(255, 255, 255, 0.92);
+      --muted: rgba(255, 255, 255, 0.70);
+      --accent: #ffb74d;
+      --stage: rgba(97, 123, 155, 0.25);
     }
 
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
     }
 
     body {
+      margin: 0;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      font-family: 'Fredoka', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .container {
-      text-align: center;
-    }
-
-    h1 {
-      color: #fff;
-      text-shadow: 0 4px 20px rgba(255, 183, 77, 0.3);
-      margin-bottom: 30px;
-      font-size: 2.5rem;
-      font-weight: 600;
-    }
-
-    .animal-wrapper {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 18px;
-      width: min(900px, calc(100vw - 40px));
+      place-items: center;
+      background: radial-gradient(1200px 600px at 30% 20%, rgba(255, 183, 77, 0.18), transparent 55%),
+        radial-gradient(900px 500px at 80% 60%, rgba(56, 189, 248, 0.16), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+        "Segoe UI Emoji";
     }
 
-    .animal-frame {
-      background: rgba(255, 255, 255, 0.04);
-      border: 2px dashed rgba(255, 183, 77, 0.55);
-      border-radius: 16px;
-      padding: 14px;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    .wrap {
+      width: min(980px, calc(100vw - 32px));
+      display: grid;
+      gap: 16px;
+      padding: 18px 0;
     }
 
-    .animal-label {
-      color: rgba(255, 255, 255, 0.85);
-      font-weight: 600;
-      margin-bottom: 10px;
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
       letter-spacing: 0.2px;
     }
 
-    .animal-svg {
+    .header .sub {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 14px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .pill {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 183, 77, 0.35);
+      background: rgba(255, 183, 77, 0.12);
+      color: #ffd38a;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    button {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.10);
+    }
+
+    .stage {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: linear-gradient(135deg, var(--stage), rgba(97, 123, 155, 0.12));
+      overflow: hidden;
+    }
+
+    #svgMount {
+      width: min(520px, 100%);
       display: block;
+    }
+
+    #svgMount svg {
       width: 100%;
       height: auto;
+      display: block;
       border-radius: 12px;
-      outline: 1px solid rgba(255, 255, 255, 0.12);
-      background: #617b9b;
+      outline: 1px solid rgba(255, 255, 255, 0.10);
+      background: transparent;
     }
 
-    /* When "Animate" is OFF, freeze all animations */
-    body:not(.animating) .duck-body-group,
-    body:not(.animating) .leg-left,
-    body:not(.animating) .leg-right,
-    body:not(.animating) .wing,
-    body:not(.animating) .tail,
-    body:not(.animating) .eye-lid,
-    body:not(.animating) .beak,
-    body:not(.animating) .giraffe-body-group,
-    body:not(.animating) .leg-back-left,
-    body:not(.animating) .leg-back-right,
-    body:not(.animating) .leg-front-left,
-    body:not(.animating) .leg-front-right {
-      animation: none !important;
+    .note {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
     }
 
-    /* ========== DUCK ANIMATIONS ========== */
-    .duck-body-group {
-      animation: bodyBob var(--run-speed) ease-in-out infinite;
+    .error {
+      color: #ffb4b4;
     }
-
-    @keyframes bodyBob {
-
-      0%,
-      100% {
-        transform: translateY(0) rotate(0deg);
-      }
-
-      25% {
-        transform: translateY(-8px) rotate(-2deg);
-      }
-
-      75% {
-        transform: translateY(-8px) rotate(2deg);
-      }
-    }
-
-    .leg-left {
-      transform-origin: 85px 140px;
-      animation: legLeft var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes legLeft {
-
-      0%,
-      100% {
-        transform: rotate(-30deg);
-      }
-
-      50% {
-        transform: rotate(30deg);
-      }
-    }
-
-    .leg-right {
-      transform-origin: 115px 140px;
-      animation: legRight var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes legRight {
-
-      0%,
-      100% {
-        transform: rotate(30deg);
-      }
-
-      50% {
-        transform: rotate(-30deg);
-      }
-    }
-
-    .wing {
-      transform-origin: 70px 95px;
-      animation: wingFlap var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes wingFlap {
-
-      0%,
-      100% {
-        transform: rotate(0deg);
-      }
-
-      25% {
-        transform: rotate(-15deg);
-      }
-
-      75% {
-        transform: rotate(10deg);
-      }
-    }
-
-    .tail {
-      transform-origin: 30px 90px;
-      animation: tailWag var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes tailWag {
-
-      0%,
-      100% {
-        transform: rotate(0deg);
-      }
-
-      33% {
-        transform: rotate(-8deg);
-      }
-
-      66% {
-        transform: rotate(8deg);
-      }
-    }
-
-    .eye-lid {
-      /* Slow = open eyes, Fast = closed eyes (determination) */
-      transform-box: fill-box;
-      transform-origin: center bottom;
-      transform: scaleY(var(--eye-close));
-      transition: transform 180ms ease-out;
-    }
-
-    .beak {
-      transform-origin: 160px 75px;
-      animation: beakWobble var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes beakWobble {
-
-      0%,
-      100% {
-        transform: rotate(0deg);
-      }
-
-      25% {
-        transform: rotate(3deg);
-      }
-
-      75% {
-        transform: rotate(-2deg);
-      }
-    }
-
-    /* ========== GIRAFFE ANIMATIONS ========== */
-    .giraffe-body-group {
-      animation: giraffeBodyBob var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes giraffeBodyBob {
-
-      0%,
-      100% {
-        transform: translateY(0) rotate(0deg);
-      }
-
-      25% {
-        transform: translateY(-6px) rotate(-1deg);
-      }
-
-      75% {
-        transform: translateY(-6px) rotate(1deg);
-      }
-    }
-
-    .leg-back-left {
-      transform-origin: 51px 115px;
-      animation: giraffeBackLegLeft var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes giraffeBackLegLeft {
-
-      0%,
-      100% {
-        transform: rotate(-25deg);
-      }
-
-      50% {
-        transform: rotate(25deg);
-      }
-    }
-
-    .leg-back-right {
-      transform-origin: 68px 115px;
-      animation: giraffeBackLegRight var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes giraffeBackLegRight {
-
-      0%,
-      100% {
-        transform: rotate(25deg);
-      }
-
-      50% {
-        transform: rotate(-25deg);
-      }
-    }
-
-    .leg-front-left {
-      transform-origin: 121px 115px;
-      animation: giraffeFrontLegLeft var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes giraffeFrontLegLeft {
-
-      0%,
-      100% {
-        transform: rotate(25deg);
-      }
-
-      50% {
-        transform: rotate(-25deg);
-      }
-    }
-
-    .leg-front-right {
-      transform-origin: 138px 115px;
-      animation: giraffeFrontLegRight var(--run-speed) ease-in-out infinite;
-    }
-
-    @keyframes giraffeFrontLegRight {
-
-      0%,
-      100% {
-        transform: rotate(-25deg);
-      }
-
-      50% {
-        transform: rotate(25deg);
-      }
-    }
-
-    .giraffe-head-neck {
-      transform-origin: 140px 95px;
-      transform: rotate(var(--head-tilt));
-      transition: transform 0.15s ease-out;
-    }
-
-    /* ========== CONTROLS ========== */
-    .controls {
-      margin-top: 40px;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      padding: 25px 35px;
-      border-radius: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .control-row {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .controls label {
-      font-weight: 600;
-      color: #e0e0e0;
-    }
-
-    .controls input[type="range"] {
-      width: 180px;
-      cursor: pointer;
-      accent-color: #FFB74D;
-    }
-
-    .controls input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: #FFB74D;
-    }
-
-    .controls input:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .speed-value {
-      font-family: monospace;
-      background: rgba(255, 183, 77, 0.2);
-      color: #FFB74D;
-      padding: 6px 12px;
-      border-radius: 8px;
-    }
-
-    /* (Animal selector styles removed: all animals render at once) */
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="animal-wrapper">
-      <div class="animal-frame">
-        <div class="animal-label">Duck</div>
-        <!-- DUCK SVG -->
-        <svg class="animal-svg" id="duck" width="250" height="186" viewBox="0 0 250 186"
-          preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
-          <g class="leg-left">
-            <rect x="80" y="125" width="10" height="50" rx="5" fill="#E8A030" />
-            <ellipse cx="85" cy="178" rx="18" ry="8" fill="#E8A030" />
-            <path d="M70 178 L85 170 L85 186 Z" fill="#E8A030" />
-          </g>
-          <g class="leg-right">
-            <rect x="110" y="125" width="10" height="50" rx="5" fill="#D4912A" />
-            <ellipse cx="115" cy="178" rx="18" ry="8" fill="#D4912A" />
-            <path d="M100 178 L115 170 L115 186 Z" fill="#D4912A" />
-          </g>
-          <g class="duck-body-group">
-            <g class="tail">
-              <ellipse cx="30" cy="85" rx="20" ry="12" fill="#F5D76E" transform="rotate(-20 30 85)" />
-              <ellipse cx="25" cy="80" rx="15" ry="8" fill="#FFE599" transform="rotate(-30 25 80)" />
-              <ellipse cx="35" cy="92" rx="12" ry="6" fill="#E8C547" transform="rotate(-10 35 92)" />
-            </g>
-            <ellipse cx="100" cy="100" rx="65" ry="50" fill="#F5D76E" />
-            <ellipse cx="90" cy="85" rx="40" ry="30" fill="#FFE599" opacity="0.6" />
-            <ellipse cx="105" cy="115" rx="45" ry="30" fill="#FFF8DC" />
-            <g class="wing">
-              <ellipse cx="85" cy="100" rx="35" ry="25" fill="#E8C547" />
-              <ellipse cx="75" cy="95" rx="20" ry="15" fill="#D4B13D" opacity="0.5" />
-              <path d="M55 105 Q65 100 75 105" stroke="#D4B13D" stroke-width="2" fill="none" />
-              <path d="M60 110 Q70 105 80 110" stroke="#D4B13D" stroke-width="2" fill="none" />
-            </g>
-            <ellipse cx="150" cy="75" rx="25" ry="35" fill="#F5D76E" />
-            <ellipse cx="165" cy="50" rx="30" ry="28" fill="#F5D76E" />
-            <ellipse cx="160" cy="42" rx="18" ry="15" fill="#FFE599" opacity="0.5" />
-            <ellipse cx="175" cy="45" rx="12" ry="14" fill="white" />
-            <circle cx="180" cy="48" r="7" fill="#222" />
-            <circle cx="182" cy="46" r="2.5" fill="white" />
-            <ellipse class="eye-lid" cx="175" cy="45" rx="13" ry="15" fill="#F5D76E" />
-            <path d="M163 32 Q175 28 188 35" stroke="#8B6914" stroke-width="3" fill="none" stroke-linecap="round" />
-            <g class="beak">
-              <path d="M185 55 L220 52 Q225 58 220 62 L185 62 Q180 58 185 55 Z" fill="#E8A030" />
-              <path d="M185 62 L215 62 Q218 68 212 70 L185 68 Q182 65 185 62 Z" fill="#D4912A" />
-              <circle cx="200" cy="57" r="2" fill="#C48820" />
-              <path d="M185 60 L218 60" stroke="#C48820" stroke-width="1" />
-            </g>
-            <ellipse cx="155" cy="58" rx="8" ry="5" fill="#FFB6C1" opacity="0.5" />
-            <g>
-              <ellipse cx="150" cy="28" rx="6" ry="10" fill="#E8C547" transform="rotate(-20 150 28)" />
-              <ellipse cx="158" cy="25" rx="5" ry="12" fill="#F5D76E" transform="rotate(-5 158 25)" />
-              <ellipse cx="165" cy="26" rx="4" ry="10" fill="#E8C547" transform="rotate(10 165 26)" />
-            </g>
-          </g>
-        </svg>
-      </div>
-
-      <div class="animal-frame">
-        <div class="animal-label">Giraffe</div>
-        <!-- GIRAFFE SVG -->
-        <svg class="animal-svg" id="giraffe" width="250" height="210" viewBox="0 -29 250 210"
-          preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
-          <g class="leg-back-left">
-            <rect x="45" y="110" width="12" height="60" rx="6" fill="#C4923A" />
-            <ellipse cx="51" cy="175" rx="10" ry="6" fill="#5D4037" />
-          </g>
-          <g class="leg-back-right">
-            <rect x="62" y="115" width="12" height="55" rx="6" fill="#B8862F" />
-            <ellipse cx="68" cy="175" rx="10" ry="6" fill="#4E342E" />
-          </g>
-          <g class="leg-front-left">
-            <rect x="115" y="115" width="12" height="55" rx="6" fill="#C4923A" />
-            <ellipse cx="121" cy="175" rx="10" ry="6" fill="#5D4037" />
-          </g>
-          <g class="leg-front-right">
-            <rect x="132" y="110" width="12" height="60" rx="6" fill="#B8862F" />
-            <ellipse cx="138" cy="175" rx="10" ry="6" fill="#4E342E" />
-          </g>
-          <g class="giraffe-body-group">
-            <g transform="translate(6 0)">
-              <g class="tail">
-                <path d="M30 95 Q15 100 10 115 Q8 125 15 130" stroke="#C4923A" stroke-width="4" fill="none"
-                  stroke-linecap="round" />
-                <ellipse cx="15" cy="132" rx="6" ry="6" fill="#8B6914" transform="rotate(20 15 132)" />
-              </g>
-            </g>
-            <ellipse cx="95" cy="100" rx="60" ry="35" fill="#E8B84A" />
-            <ellipse cx="70" cy="95" rx="12" ry="10" fill="#C4923A" transform="rotate(-15 70 95)" />
-            <ellipse cx="95" cy="105" rx="10" ry="8" fill="#C4923A" />
-            <ellipse cx="115" cy="90" rx="8" ry="10" fill="#C4923A" transform="rotate(10 115 90)" />
-            <ellipse cx="55" cy="108" rx="7" ry="6" fill="#C4923A" />
-            <ellipse cx="85" cy="88" rx="30" ry="18" fill="#F5D76E" opacity="0.4" />
-            <g class="giraffe-head-neck">
-              <path d="M140 95 Q155 80 165 50 Q170 35 175 20" stroke="#E8B84A" stroke-width="35" fill="none"
-                stroke-linecap="round" />
-              <ellipse cx="155" cy="65" rx="8" ry="6" fill="#C4923A" transform="rotate(-20 155 65)" />
-              <ellipse cx="165" cy="45" rx="6" ry="8" fill="#C4923A" transform="rotate(-25 165 45)" />
-              <ellipse cx="150" cy="82" rx="7" ry="5" fill="#C4923A" />
-              <ellipse cx="185" cy="25" rx="25" ry="20" fill="#E8B84A" />
-              <ellipse cx="208" cy="32" rx="18" ry="12" fill="#F5D76E" />
-              <circle cx="216" cy="31" r="3" fill="#5D4037" />
-              <circle cx="222" cy="32" r="2.8" fill="#5D4037" />
-              <ellipse cx="180" cy="20" rx="12" ry="10" fill="#F5D76E" opacity="0.5" />
-              <ellipse cx="178" cy="22" rx="10" ry="12" fill="white" />
-              <circle cx="182" cy="24" r="6" fill="#222" />
-              <circle cx="184" cy="22" r="2" fill="white" />
-              <ellipse class="eye-lid" cx="178" cy="22" rx="11" ry="13" fill="#E8B84A" />
-              <path d="M168 12 Q178 8 190 14" stroke="#8B6914" stroke-width="2.5" fill="none" stroke-linecap="round" />
-              <path d="M200 40 Q210 45 216 42" stroke="#5D4037" stroke-width="2" fill="none" stroke-linecap="round" />
-              <ellipse cx="195" cy="35" rx="6" ry="4" fill="#FFB6C1" opacity="0.4" />
-              <ellipse cx="165" cy="12" rx="8" ry="5" fill="#E8B84A" transform="rotate(-30 165 12)" />
-              <ellipse cx="165" cy="12" rx="5" ry="3" fill="#FFB6C1" transform="rotate(-30 165 12)" opacity="0.5" />
-              <ellipse cx="190" cy="8" rx="5" ry="3" fill="#FFB6C1" transform="rotate(30 190 8)" opacity="0.5" />
-              <rect x="170" y="-8" width="5" height="14" rx="2.5" fill="#C4923A" />
-              <circle cx="172.5" cy="-8" r="4" fill="#5D4037" />
-              <rect x="182" y="-8" width="5" height="14" rx="2.5" fill="#C4923A" />
-              <circle cx="184.5" cy="-8" r="4" fill="#5D4037" />
-              <rect x="163" y="25" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-25 163 25)" />
-              <rect x="158" y="38" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-30 158 38)" />
-              <rect x="152" y="52" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-35 152 52)" />
-              <rect x="147" y="66" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-25 147 66)" />
-              <rect x="143" y="78" width="4" height="8" rx="2" fill="#8B6914" transform="rotate(-15 143 78)" />
-            </g>
-          </g>
-        </svg>
-      </div>
+  <div class="wrap">
+    <div class="header">
+      <h1>Giraffe Jump</h1>
+      <div class="sub">Loads <code>giraffe_animated.svg</code> and controls the whole cycle duration</div>
     </div>
 
-    <div class="controls">
-      <div class="control-row">
-        <label for="animateToggle">Animate:</label>
-        <input type="checkbox" id="animateToggle" />
-      </div>
-      <div class="control-row">
-        <label>Speed:</label>
-        <input type="range" id="speedSlider" min="0.1" max="0.8" step="0.05" value="0.3"
-          oninput="updateSpeed(this.value)">
-        <span class="speed-value" id="speedValue">0.3s</span>
-      </div>
+    <div class="panel controls">
+      <label>
+        Cycle duration
+        <input id="duration" type="range" min="0.2" max="8" step="0.1" value="1.0" />
+      </label>
+      <div class="pill" id="durationLabel">1.0s</div>
+      <button id="toggle" type="button">Pause</button>
     </div>
+
+    <div class="panel stage">
+      <div id="svgMount" aria-label="Giraffe jump SVG"></div>
+    </div>
+
+    <p class="note" id="status">Loading SVG…</p>
   </div>
 
   <script>
-    function updateSpeed(speed) {
-      const s = Number(speed);
-      document.documentElement.style.setProperty('--run-speed', s + 's');
-      document.getElementById('speedValue').textContent = s + 's';
+    // Svgator export in giraffe_animated.svg uses 1000ms durations in the embedded CSS.
+    // We scale playbackRate for all animations so the *whole* cycle matches your chosen duration.
+    const BASE_CYCLE_MS = 1000;
 
-      // Map slider speed (seconds) to eye closure:
-      // Linear mapping:
-      // - at 0.8s: fully open (0)
-      // - at 0.1s: squinted to the same "max squint" you had previously
-      const slider = document.getElementById('speedSlider');
-      const min = Number(slider.min); // fastest
-      const max = Number(slider.max); // slowest
-      const previousMaxSquintAt = 0.45;
-      const tPrev = (max - previousMaxSquintAt) / (max - min); // 0..1
-      const maxSquint = Math.pow(Math.max(0, Math.min(1, tPrev)), 1.4);
+    const slider = document.getElementById('duration');
+    const label = document.getElementById('durationLabel');
+    const toggleBtn = document.getElementById('toggle');
+    const statusEl = document.getElementById('status');
+    const mount = document.getElementById('svgMount');
 
-      const t = (max - s) / (max - min); // 0..1
-      const clamped = Math.max(0, Math.min(1, t));
-      const linearSquint = clamped * maxSquint;
+    let svgRoot = null;
+    let isPaused = false;
 
-      document.documentElement.style.setProperty('--eye-close', linearSquint.toFixed(3));
-
-      // Map speed to head tilt (giraffe leans back when running fast)
-      // at 0.8s: 0deg (upright), at 0.1s: -12deg (leaning back)
-      const headTilt = -32 * clamped;
-      document.documentElement.style.setProperty('--head-tilt', headTilt.toFixed(1) + 'deg');
+    function setStatus(msg, isError = false) {
+      statusEl.textContent = msg;
+      statusEl.classList.toggle('error', isError);
     }
 
-    function setAnimating(isAnimating) {
-      document.body.classList.toggle('animating', isAnimating);
+    function getAllAnimations() {
+      if (!svgRoot) return [];
+      if (typeof svgRoot.getAnimations !== 'function') return [];
+      return svgRoot.getAnimations({ subtree: true });
     }
 
-    // Ensure UI and CSS var are in sync on initial load
-    const speedSlider = document.getElementById('speedSlider');
-    const animateToggle = document.getElementById('animateToggle');
+    function applyDuration() {
+      const desiredSeconds = Number(slider.value);
+      label.textContent = desiredSeconds.toFixed(1) + 's';
 
-    updateSpeed(speedSlider.value);
-    setAnimating(animateToggle.checked); // default OFF (unchecked)
+      const anims = getAllAnimations();
+      if (!anims.length) return;
 
-    animateToggle.addEventListener('change', () => setAnimating(animateToggle.checked));
+      // If BASE=1000ms and desired=2.0s, rate=0.5 (slower).
+      const rate = BASE_CYCLE_MS / (desiredSeconds * 1000);
+
+      anims.forEach(a => {
+        a.playbackRate = rate;
+        if (isPaused) a.pause();
+        else a.play();
+      });
+
+      setStatus(`Duration applied to ${anims.length} animation(s).`);
+    }
+
+    function togglePlayPause() {
+      isPaused = !isPaused;
+      toggleBtn.textContent = isPaused ? 'Play' : 'Pause';
+
+      const anims = getAllAnimations();
+      anims.forEach(a => (isPaused ? a.pause() : a.play()));
+      if (anims.length) setStatus(`${isPaused ? 'Paused' : 'Playing'} ${anims.length} animation(s).`);
+    }
+
+    async function loadAndInlineSvg() {
+      try {
+        const res = await fetch('./giraffe_animated.svg', { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const text = await res.text();
+        mount.innerHTML = text;
+
+        svgRoot = mount.querySelector('svg');
+        if (!svgRoot) {
+          setStatus('Loaded file, but could not find an <svg> root element.', true);
+          return;
+        }
+
+        if (typeof svgRoot.getAnimations !== 'function') {
+          setStatus('SVG loaded, but this browser does not support getAnimations() for SVG.', true);
+          return;
+        }
+
+        // Wait a tick for the injected <style> to apply and animations to initialize.
+        requestAnimationFrame(() => {
+          const anims = getAllAnimations();
+          if (!anims.length) {
+            setStatus('SVG loaded, but no animations were detected yet.', true);
+            return;
+          }
+          setStatus(`SVG loaded. Found ${anims.length} animation(s).`);
+          applyDuration();
+        });
+      } catch (e) {
+        setStatus(`Failed to load ./giraffe_animated.svg (${String(e)}). Are you running a local server?`, true);
+      }
+    }
+
+    slider.addEventListener('input', applyDuration);
+    toggleBtn.addEventListener('click', togglePlayPause);
+
+    // Initialize UI
+    label.textContent = Number(slider.value).toFixed(1) + 's';
+    loadAndInlineSvg();
   </script>
 </body>
 
