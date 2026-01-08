@@ -22,9 +22,10 @@
 
     body {
       margin: 0;
-      min-height: 100vh;
+      height: 1100px;
       display: grid;
-      place-items: center;
+      /* Top-align the main content while keeping it centered horizontally */
+      place-items: start center;
       background: radial-gradient(1200px 600px at 30% 20%, rgba(255, 183, 77, 0.18), transparent 55%),
         radial-gradient(900px 500px at 80% 60%, rgba(56, 189, 248, 0.16), transparent 55%),
         var(--bg);
@@ -147,10 +148,70 @@
     .error {
       color: #ffb4b4;
     }
+
+    /* ===== Runner (second instance) ===== */
+    :root {
+      --across-duration: 8s;
+      --runner-start-vw: -60;
+      --runner-end-vw: 110;
+    }
+
+    .runner-lane {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0px;
+      height: 210px;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .runner {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      will-change: transform;
+      animation: runnerAcross var(--across-duration) linear infinite;
+    }
+
+    .runner-scale {
+      transform: scale(0.5);
+      transform-origin: left bottom;
+    }
+
+    .runner object {
+      width: 520px;
+      height: auto;
+      display: block;
+      background: transparent;
+    }
+
+    body.paused .runner {
+      animation-play-state: paused;
+    }
+
+    @keyframes runnerAcross {
+      from {
+        transform: translateX(calc(var(--runner-start-vw) * 1vw));
+      }
+
+      to {
+        transform: translateX(calc(var(--runner-end-vw) * 1vw));
+      }
+    }
   </style>
 </head>
 
 <body>
+  <div class="runner-lane" aria-hidden="true">
+    <div class="runner" id="runner">
+      <div class="runner-scale">
+        <object id="runnerObj" data="./giraffe_animated.svg" type="image/svg+xml"></object>
+      </div>
+    </div>
+  </div>
+
   <div class="wrap">
     <div class="header">
       <h1>Giraffe Animated</h1>
@@ -177,14 +238,22 @@
     // Svgator export in giraffe_animated.svg uses 2000ms (2s) for the full 0%→100% timeline.
     // We scale playbackRate for all animations so the *whole* cycle matches your chosen duration.
     const BASE_CYCLE_MS = 2000;
+    // Runner tuning:
+    // - Increase to make the runner travel farther across the screen per loop.
+    // - Decrease to make it travel less (slower-looking, even at same duration).
+    const RUNNER_ADVANCE_MULT = 0.2;
+    const RUNNER_START_VW = -30;
+    const RUNNER_END_VW = 380;
 
     const slider = document.getElementById('duration');
     const label = document.getElementById('durationLabel');
     const toggleBtn = document.getElementById('toggle');
     const statusEl = document.getElementById('status');
     const mount = document.getElementById('svgMount');
+    const runnerObj = document.getElementById('runnerObj');
 
     let svgRoot = null;
+    let runnerSvgRoot = null;
     let isPaused = false;
 
     function getStepDecimals() {
@@ -204,10 +273,17 @@
       statusEl.classList.toggle('error', isError);
     }
 
+    function getAnimationsFor(svgEl) {
+      if (!svgEl) return [];
+      if (typeof svgEl.getAnimations !== 'function') return [];
+      return svgEl.getAnimations({ subtree: true });
+    }
+
     function getAllAnimations() {
-      if (!svgRoot) return [];
-      if (typeof svgRoot.getAnimations !== 'function') return [];
-      return svgRoot.getAnimations({ subtree: true });
+      return [
+        ...getAnimationsFor(svgRoot),
+        ...getAnimationsFor(runnerSvgRoot),
+      ];
     }
 
     function applyDuration() {
@@ -216,6 +292,12 @@
 
       const anims = getAllAnimations();
       if (!anims.length) return;
+
+      // Keep the across-the-screen run roughly in sync with the gait:
+      // with BASE_CYCLE_MS=2000ms, a 2.0s cycle becomes ~8.0s across the screen.
+      document.documentElement.style.setProperty('--across-duration', (desiredSeconds * 4).toFixed(3) + 's');
+      document.documentElement.style.setProperty('--runner-start-vw', String(RUNNER_START_VW));
+      document.documentElement.style.setProperty('--runner-end-vw', (RUNNER_END_VW * RUNNER_ADVANCE_MULT).toFixed(3));
 
       // If BASE=2000ms and desired=4.0s, rate=0.5 (slower).
       const rate = BASE_CYCLE_MS / (desiredSeconds * 1000);
@@ -231,6 +313,7 @@
 
     function togglePlayPause() {
       isPaused = !isPaused;
+      document.body.classList.toggle('paused', isPaused);
       toggleBtn.textContent = isPaused ? 'Play' : 'Pause';
 
       const anims = getAllAnimations();
@@ -259,12 +342,13 @@
 
         // Wait a tick for the injected <style> to apply and animations to initialize.
         requestAnimationFrame(() => {
-          const anims = getAllAnimations();
+          const anims = getAnimationsFor(svgRoot);
           if (!anims.length) {
             setStatus('SVG loaded, but no animations were detected yet.', true);
             return;
           }
-          setStatus(`SVG loaded. Found ${anims.length} animation(s).`);
+          const all = getAllAnimations();
+          setStatus(`SVG loaded. Found ${all.length} animation(s).`);
           applyDuration();
         });
       } catch (e) {
@@ -272,11 +356,28 @@
       }
     }
 
+    function hookRunnerObject() {
+      runnerObj.addEventListener('load', () => {
+        try {
+          runnerSvgRoot = runnerObj.contentDocument?.querySelector('svg') ?? null;
+          // Apply current settings as soon as it loads.
+          applyDuration();
+        } catch {
+          runnerSvgRoot = null;
+        }
+      });
+    }
+
     slider.addEventListener('input', applyDuration);
     toggleBtn.addEventListener('click', togglePlayPause);
 
     // Initialize UI
     label.textContent = formatSeconds(slider.value);
+    document.documentElement.style.setProperty('--across-duration', (Number(slider.value) * 4).toFixed(3) + 's');
+    document.documentElement.style.setProperty('--runner-start-vw', String(RUNNER_START_VW));
+    document.documentElement.style.setProperty('--runner-end-vw', (RUNNER_END_VW * RUNNER_ADVANCE_MULT).toFixed(3));
+    document.body.classList.toggle('paused', isPaused);
+    hookRunnerObject();
     loadAndInlineSvg();
   </script>
 </body>
