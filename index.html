@@ -152,8 +152,8 @@
     /* ===== Runner (second instance) ===== */
     :root {
       --across-duration: 8s;
-      --runner-start-vw: -60;
-      --runner-end-vw: 110;
+      --runner-from-x: -300px;
+      --runner-to-x: 1200px;
     }
 
     .runner-lane {
@@ -193,11 +193,11 @@
 
     @keyframes runnerAcross {
       from {
-        transform: translateX(calc(var(--runner-start-vw) * 1vw));
+        transform: translate3d(var(--runner-from-x), 0, 0);
       }
 
       to {
-        transform: translateX(calc(var(--runner-end-vw) * 1vw));
+        transform: translate3d(var(--runner-to-x), 0, 0);
       }
     }
   </style>
@@ -239,11 +239,13 @@
     // We scale playbackRate for all animations so the *whole* cycle matches your chosen duration.
     const BASE_CYCLE_MS = 2000;
     // Runner tuning:
-    // - Increase to make the runner travel farther across the screen per loop.
-    // - Decrease to make it travel less (slower-looking, even at same duration).
-    const RUNNER_ADVANCE_MULT = 0.2;
-    const RUNNER_START_VW = -30;
-    const RUNNER_END_VW = 380;
+    // - Width-agnostic: runner always goes from just-offscreen-left to just-offscreen-right.
+    // - Controls how fast it crosses the screen relative to the gait cycle.
+    //   traverseSeconds = cycleSeconds * RUNNER_TRAVERSE_CYCLES / RUNNER_ADVANCE_MULT
+    //   (so bigger RUNNER_ADVANCE_MULT => faster crossing)
+    const RUNNER_TRAVERSE_CYCLES = 4.0;
+    const RUNNER_ADVANCE_MULT = 1.1;
+    const RUNNER_OFFSCREEN_PAD_PX = 20;
 
     const slider = document.getElementById('duration');
     const label = document.getElementById('durationLabel');
@@ -286,6 +288,24 @@
       ];
     }
 
+    function updateRunnerBounds() {
+      // Measure the *visual* (post-transform) runner width so we can go fully off-screen.
+      const runnerScale = document.querySelector('.runner-scale');
+      if (!runnerScale) return;
+
+      const rect = runnerScale.getBoundingClientRect();
+      const runnerWidth = rect.width || 0;
+      const viewportWidth = window.innerWidth || 0;
+
+      if (!runnerWidth || !viewportWidth) return;
+
+      const fromX = -(runnerWidth + RUNNER_OFFSCREEN_PAD_PX);
+      const toX = viewportWidth + RUNNER_OFFSCREEN_PAD_PX;
+
+      document.documentElement.style.setProperty('--runner-from-x', `${fromX.toFixed(2)}px`);
+      document.documentElement.style.setProperty('--runner-to-x', `${toX.toFixed(2)}px`);
+    }
+
     function applyDuration() {
       const desiredSeconds = Number(slider.value);
       label.textContent = formatSeconds(desiredSeconds);
@@ -293,11 +313,10 @@
       const anims = getAllAnimations();
       if (!anims.length) return;
 
-      // Keep the across-the-screen run roughly in sync with the gait:
-      // with BASE_CYCLE_MS=2000ms, a 2.0s cycle becomes ~8.0s across the screen.
-      document.documentElement.style.setProperty('--across-duration', (desiredSeconds * 4).toFixed(3) + 's');
-      document.documentElement.style.setProperty('--runner-start-vw', String(RUNNER_START_VW));
-      document.documentElement.style.setProperty('--runner-end-vw', (RUNNER_END_VW * RUNNER_ADVANCE_MULT).toFixed(3));
+      // Width-agnostic runner motion: always offscreen->offscreen, duration tied to gait cycles.
+      const traverseSeconds = (desiredSeconds * RUNNER_TRAVERSE_CYCLES) / RUNNER_ADVANCE_MULT;
+      document.documentElement.style.setProperty('--across-duration', traverseSeconds.toFixed(3) + 's');
+      updateRunnerBounds();
 
       // If BASE=2000ms and desired=4.0s, rate=0.5 (slower).
       const rate = BASE_CYCLE_MS / (desiredSeconds * 1000);
@@ -361,6 +380,7 @@
         try {
           runnerSvgRoot = runnerObj.contentDocument?.querySelector('svg') ?? null;
           // Apply current settings as soon as it loads.
+          updateRunnerBounds();
           applyDuration();
         } catch {
           runnerSvgRoot = null;
@@ -373,9 +393,13 @@
 
     // Initialize UI
     label.textContent = formatSeconds(slider.value);
-    document.documentElement.style.setProperty('--across-duration', (Number(slider.value) * 4).toFixed(3) + 's');
-    document.documentElement.style.setProperty('--runner-start-vw', String(RUNNER_START_VW));
-    document.documentElement.style.setProperty('--runner-end-vw', (RUNNER_END_VW * RUNNER_ADVANCE_MULT).toFixed(3));
+    {
+      const desiredSeconds = Number(slider.value);
+      const traverseSeconds = (desiredSeconds * RUNNER_TRAVERSE_CYCLES) / RUNNER_ADVANCE_MULT;
+      document.documentElement.style.setProperty('--across-duration', traverseSeconds.toFixed(3) + 's');
+    }
+    updateRunnerBounds();
+    window.addEventListener('resize', () => updateRunnerBounds());
     document.body.classList.toggle('paused', isPaused);
     hookRunnerObject();
     loadAndInlineSvg();
