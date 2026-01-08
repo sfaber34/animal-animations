@@ -14,7 +14,7 @@ That’s it — Vercel will serve `index.html` at `/`.
 
 This repo includes `vercel.json` with a couple friendly routes:
 
-- `/giraffe-jump` → `giraffe_jump_duration_control.html`
+- `/giraffe-animated` → `/` (serves `index.html`, which loads `giraffe_animated.svg`)
 - `/giraffe` → `giraffe.svg`
 
 ### Optional: SPA-style routing (only if you add client-side routes later)
@@ -38,8 +38,8 @@ python3 -m http.server 5173
 Then open:
 
 - `http://localhost:5173/` (home)
-- `http://localhost:5173/giraffe_jump_duration_control.html` (duration slider page)
-- `http://localhost:5173/giraffe-jump` (same page, friendly route on Vercel)
+- `http://localhost:5173/` (giraffe animated page)
+- `http://localhost:5173/giraffe-animated` (same page, friendly route on Vercel)
 
 Why you need a local server: browsers block access to an embedded SVG’s DOM when opening the page via `file://`, so the
 duration slider can’t call `contentDocument` / `getAnimations()` unless the files are served over `http(s)`.
